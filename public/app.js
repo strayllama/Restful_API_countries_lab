@@ -1,6 +1,6 @@
 const apiCountryList = [];
+const regionCountryList = [];
 let currentCountry = "";
-
 
 document.addEventListener('DOMContentLoaded', () => {
   const url = 'https://restcountries.eu/rest/v2/all';
@@ -30,8 +30,22 @@ const requestComplete = function () {
   countries.forEach((country) => {
     apiCountryList.push(country);
   });
-  console.dir(apiCountryList);
+  countries.forEach((country) => {
+    if(!regionCountryList.includes(country.region) && country.region != ""){
+    regionCountryList.push(country.region)}
+  });
+  populateRegionDropDown();
   populateDropDown();
+};
+
+const populateRegionDropDown = function () {
+  const regionDropDown = document.querySelector('#region-picker')
+  regionCountryList.forEach((region) => {
+    const optionRegion = document.createElement('option');
+    optionRegion.value = region;
+    optionRegion.textContent = region;
+    regionDropDown.appendChild(optionRegion)
+  })
 };
 
 
