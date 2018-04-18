@@ -6,8 +6,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const url = 'https://restcountries.eu/rest/v2/all';
   makeRequest(url, requestComplete);
 
-  const selectDropDown = document.querySelector('#country-picker');
-  selectDropDown.addEventListener('change', handleSelectCountry);
+  const selectCountryDropDown = document.querySelector('#country-picker');
+  selectCountryDropDown.addEventListener('change', handleSelectCountry);
 
   const regionDropDown = document.querySelector('#region-picker');
   regionDropDown.addEventListener('change', handleSelectRegion)
@@ -25,7 +25,7 @@ const makeRequest = function (url, callback) {
   request.addEventListener('load', callback);
 };
 
-
+// on requestComplete from getting api info do this:
 const requestComplete = function () {
   if (this.status !==200) return; // this. is the request object. should be 200, else an error object
   const jsonString = this.responseText;  // take response
@@ -35,10 +35,36 @@ const requestComplete = function () {
   });
   countries.forEach((country) => {
     if(!regionCountryList.includes(country.region) && country.region != ""){
-    regionCountryList.push(country.region)}
-  });
-  populateRegionDropDown();
+      regionCountryList.push(country.region)}
+    });
+    populateRegionDropDown();
+    populateCountryDropDown("all");
+  };
+
+const handleSelectRegion = function (event) {
+  populateCountryDropDown(event.target.value);
 };
+
+const handleSelectCountry = function (event) {
+  const countryalpha3Code = event.target.value;
+  console.log(countryalpha3Code);
+  currentCountry = findCountry(countryalpha3Code);
+
+  clearContainer();
+  const countryContainer = document.querySelector('#country-details');
+  displayCountry(currentCountry, countryContainer);
+};
+
+const clearContainer = function () {
+  const countryContainer = document.querySelector('#country-details')
+  countryContainer.textContent = "";
+    clearBorderContainer();
+};
+
+const clearBorderContainer = function () {
+  const borderContainer = document.querySelector('#border-countries-container');
+  borderContainer.textContent = "";
+}
 
 const populateRegionDropDown = function () {
   const regionDropDown = document.querySelector('#region-picker')
@@ -55,42 +81,32 @@ const populateRegionDropDown = function () {
   })
 };
 
-const handleSelectRegion = function (event) {
-  const selectDropDown = document.querySelector('#country-picker');
-  selectDropDown.innerHTML = "";
+
+const populateCountryDropDown = function (regionChoice) {
+  const selectCountryDropDown = document.querySelector('#country-picker');
+  selectCountryDropDown.innerHTML = "";
+
+  const chooseOption = document.createElement('option');
+  chooseOption.value = "";
+  chooseOption.disabled;
+  chooseOption.innerHTML = "Select a Country to view:";
+  selectCountryDropDown.appendChild(chooseOption);
   apiCountryList.forEach((country) => {
-    if(event.target.value === "all"){
-      populateDropDown();
-    } else if (country.region === event.target.value){
+    if (regionChoice === "all") {
       const optionCountry = document.createElement('option');
       optionCountry.value = country.alpha3Code;
       optionCountry.textContent = country.name;
-      selectDropDown.appendChild(optionCountry);
+      selectCountryDropDown.appendChild(optionCountry);
     }
-  })
-};
-
-const handleSelectCountry = function (event) {
-  const countryalpha3Code = event.target.value;
-  console.log(countryalpha3Code);
-  currentCountry = findCountry(countryalpha3Code);
-
-  clearContainer();
-  const countryContainer = document.querySelector('#country-details');
-  displayCountry(currentCountry, countryContainer);
-};
-
-const populateDropDown = function () {
-  const selectDropDown = document.querySelector('#country-picker');
-  apiCountryList.forEach((country) => {
-    if (!country.alpha3Code == null || !country.alpha3Code == "") {
+    else if (country.region === regionChoice) {
       const optionCountry = document.createElement('option');
       optionCountry.value = country.alpha3Code;
       optionCountry.textContent = country.name;
-      selectDropDown.appendChild(optionCountry);
-    }
+      selectCountryDropDown.appendChild(optionCountry);
+    };
   });
-};
+}
+
 
 const findCountry = function(alpha3Code) {
   return apiCountryList.find((country) => {
@@ -101,43 +117,27 @@ const findCountry = function(alpha3Code) {
 };
 
 
-
 const displayCountry = function (country, container) {
-  // countryContainer.textContent = "";
-
   const name = document.createElement('li');
   name.classList.add("bold");
-  const details = document.createElement('ul');
-
-  const pop = document.createElement('li');
-  const capital = document.createElement('li');
-  const flag = document.createElement('img');
-  flag.classList.add("flag");
-
-
   name.textContent = `Country : ${country.name}`;
-  pop.textContent = `Population : ${country.population}`;
-  capital.textContent = `Capital : ${country.capital}`;
-  flag.src = country.flag;
+
+  const details = document.createElement('ul');
+    const pop = document.createElement('li');
+    pop.textContent = `Population : ${country.population}`;
+    const capital = document.createElement('li');
+    capital.textContent = `Capital : ${country.capital}`;
+    const flag = document.createElement('img');
+    flag.classList.add("flag");
+    flag.src = country.flag;
 
   container.appendChild(name);
-
   details.appendChild(pop);
   details.appendChild(capital);
   details.appendChild(flag);
   container.appendChild(details);
 };
 
-const clearContainer = function () {
-  const countryContainer = document.querySelector('#country-details')
-  countryContainer.textContent = "";
-    clearBorderContainer();
-};
-
-const clearBorderContainer = function () {
-  const borderContainer = document.querySelector('#border-countries-container');
-  borderContainer.textContent = "";
-}
 
 const displayBorders = function() {
   clearBorderContainer();
