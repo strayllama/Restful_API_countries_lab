@@ -1,4 +1,6 @@
 const apiCountryList = [];
+let currentCountry = "";
+
 
 document.addEventListener('DOMContentLoaded', () => {
   const url = 'https://restcountries.eu/rest/v2/all';
@@ -6,6 +8,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const selectDropDown = document.querySelector('#country-picker');
   selectDropDown.addEventListener('change', handleSelectCountry);
+
+  const borderButton = document.querySelector('#border-countries-button');
+  borderButton.addEventListener('click', displayBorders);
 });
 
 
@@ -33,27 +38,36 @@ const requestComplete = function () {
 const populateDropDown = function () {
   const selectDropDown = document.querySelector('#country-picker');
   apiCountryList.forEach((country) => {
-    if (!country.cioc == null || !country.cioc == "") {
+    if (!country.alpha3Code == null || !country.alpha3Code == "") {
       const optionCountry = document.createElement('option');
-      optionCountry.value = country.cioc;
+      optionCountry.value = country.alpha3Code;
       optionCountry.textContent = country.name;
       selectDropDown.appendChild(optionCountry);
     }
   });
 };
 
-const handleSelectCountry = function (event) {
-  const countryCioc = event.target.value;
-  const selectedCountry = apiCountryList.find((country) => {
-    return country.cioc === countryCioc;
+const findCountry = function(alpha3Code) {
+  return apiCountryList.find((country) => {
+  if (country.alpha3Code === alpha3Code){
+    return country;
+    };
   });
-console.log(selectedCountry);
-  displayCountry(selectedCountry);
 };
 
-const displayCountry = function (country) {
-  const container = document.querySelector('#country-details');
-  container.textContent = "";
+const handleSelectCountry = function (event) {
+    const countryalpha3Code = event.target.value;
+    console.log(countryalpha3Code);
+  currentCountry = findCountry(countryalpha3Code);
+
+  clearContainer();
+  const countryContainer = document.querySelector('#country-details');
+  displayCountry(currentCountry, countryContainer);
+};
+
+
+const displayCountry = function (country, container) {
+  // countryContainer.textContent = "";
 
   const name = document.createElement('li');
   name.classList.add("bold");
@@ -76,4 +90,34 @@ const displayCountry = function (country) {
   details.appendChild(capital);
   details.appendChild(flag);
   container.appendChild(details);
+};
+
+const clearContainer = function () {
+  const countryContainer = document.querySelector('#country-details')
+  countryContainer.textContent = "";
+    clearBorderContainer();
+};
+
+const clearBorderContainer = function () {
+  const borderContainer = document.querySelector('#border-countries-container');
+  borderContainer.textContent = "";
+}
+
+const displayBorders = function() {
+  clearBorderContainer();
+  const countryContainer = document.querySelector('#country-details');
+  const title = document.createElement('h2');
+  const borderContainer = document.querySelector('#border-countries-container');
+  if(!countryContainer == "" && !currentCountry.borders.length == 0){
+    title.textContent = `Countries bordering ${currentCountry.name}`;
+    borderContainer.appendChild(title);
+    currentCountry.borders.forEach((countryalpha3Code) => {
+      let borderCountry = findCountry(countryalpha3Code)
+      displayCountry(borderCountry, borderContainer)
+    });
+    } else {
+
+      title.textContent = `${currentCountry.name} has no bordering countries!`
+      borderContainer.appendChild(title);
+  };
 };
