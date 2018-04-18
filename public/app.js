@@ -9,6 +9,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const selectDropDown = document.querySelector('#country-picker');
   selectDropDown.addEventListener('change', handleSelectCountry);
 
+  const regionDropDown = document.querySelector('#region-picker');
+  regionDropDown.addEventListener('change', handleSelectRegion)
+
   const borderButton = document.querySelector('#border-countries-button');
   borderButton.addEventListener('click', displayBorders);
 });
@@ -35,11 +38,15 @@ const requestComplete = function () {
     regionCountryList.push(country.region)}
   });
   populateRegionDropDown();
-  populateDropDown();
 };
 
 const populateRegionDropDown = function () {
   const regionDropDown = document.querySelector('#region-picker')
+  regionDropDown.innerHTML = "";
+  const allOption = document.createElement('option');
+  allOption.value = "all";
+  allOption.innerHTML = "All countries";
+  regionDropDown.appendChild(allOption);
   regionCountryList.forEach((region) => {
     const optionRegion = document.createElement('option');
     optionRegion.value = region;
@@ -48,6 +55,30 @@ const populateRegionDropDown = function () {
   })
 };
 
+const handleSelectRegion = function (event) {
+  const selectDropDown = document.querySelector('#country-picker');
+  selectDropDown.innerHTML = "";
+  apiCountryList.forEach((country) => {
+    if(event.target.value === "all"){
+      populateDropDown();
+    } else if (country.region === event.target.value){
+      const optionCountry = document.createElement('option');
+      optionCountry.value = country.alpha3Code;
+      optionCountry.textContent = country.name;
+      selectDropDown.appendChild(optionCountry);
+    }
+  })
+};
+
+const handleSelectCountry = function (event) {
+  const countryalpha3Code = event.target.value;
+  console.log(countryalpha3Code);
+  currentCountry = findCountry(countryalpha3Code);
+
+  clearContainer();
+  const countryContainer = document.querySelector('#country-details');
+  displayCountry(currentCountry, countryContainer);
+};
 
 const populateDropDown = function () {
   const selectDropDown = document.querySelector('#country-picker');
@@ -69,15 +100,6 @@ const findCountry = function(alpha3Code) {
   });
 };
 
-const handleSelectCountry = function (event) {
-    const countryalpha3Code = event.target.value;
-    console.log(countryalpha3Code);
-  currentCountry = findCountry(countryalpha3Code);
-
-  clearContainer();
-  const countryContainer = document.querySelector('#country-details');
-  displayCountry(currentCountry, countryContainer);
-};
 
 
 const displayCountry = function (country, container) {
