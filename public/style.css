@@ -1,3 +1,8 @@
 .bold {
   font-weight: bold;
 }
+
+.flag {
+  height: 350px;
+  border: 1px solid;
+}

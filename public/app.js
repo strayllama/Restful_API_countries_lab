@@ -54,20 +54,26 @@ console.log(selectedCountry);
 const displayCountry = function (country) {
   const container = document.querySelector('#country-details');
   container.textContent = "";
-  
+
   const name = document.createElement('li');
   name.classList.add("bold");
   const details = document.createElement('ul');
 
   const pop = document.createElement('li');
   const capital = document.createElement('li');
+  const flag = document.createElement('img');
+  flag.classList.add("flag");
+
+
   name.textContent = `Country : ${country.name}`;
   pop.textContent = `Population : ${country.population}`;
   capital.textContent = `Capital : ${country.capital}`;
+  flag.src = country.flag;
 
   container.appendChild(name);
 
   details.appendChild(pop);
   details.appendChild(capital);
+  details.appendChild(flag);
   container.appendChild(details);
 };
