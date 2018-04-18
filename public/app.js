@@ -1,17 +1,13 @@
 const apiCountryList = [];
 
 document.addEventListener('DOMContentLoaded', () => {
-  // const getCountries = document.querySelector('#getCountries');
-  // getCountries.addEventListener('click', handleGetCountries);
   const url = 'https://restcountries.eu/rest/v2/all';
   makeRequest(url, requestComplete);
+
+  const selectDropDown = document.querySelector('#country-picker');
+  selectDropDown.addEventListener('change', handleSelectCountry);
 });
 
-// and use this handle with the
-// const handleGetCountries = function () {
-//   const url = 'https://restcountries.eu/rest/v2/all';
-//   makeRequest(url, requestComplete);
-// };
 
 // The steps to get info from any API
 const makeRequest = function (url, callback) {
@@ -36,11 +32,25 @@ const requestComplete = function () {
 
 const populateDropDown = function () {
   const selectDropDown = document.querySelector('#country-picker');
-   apiCountryList.forEach((country) => {
-   const optionCountry = document.createElement('option');
-   optionCountry.value = country.coic;
-   optionCountry.textContent = country.name;
-   selectDropDown.appendChild(optionCountry);
+  apiCountryList.forEach((country) => {
+    if (!country.cioc == null || !country.cioc == "") {
+      const optionCountry = document.createElement('option');
+      optionCountry.value = country.cioc;
+      optionCountry.textContent = country.name;
+      selectDropDown.appendChild(optionCountry);
+    }
   });
+};
+
+const handleSelectCountry = function (event) {
+  const countryCioc = event.target.value;
+  const selectedCountry = apiCountryList.find((country) => {
+    return country.cioc === countryCioc;
+  });
+console.log(selectedCountry);
+  displayCountry(selectedCountry);
+};
+
+const displayCountry = function (country) {
 
 };
