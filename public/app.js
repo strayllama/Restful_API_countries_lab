@@ -52,5 +52,22 @@ console.log(selectedCountry);
 };
 
 const displayCountry = function (country) {
+  const container = document.querySelector('#country-details');
+  container.textContent = "";
+  
+  const name = document.createElement('li');
+  name.classList.add("bold");
+  const details = document.createElement('ul');
 
+  const pop = document.createElement('li');
+  const capital = document.createElement('li');
+  name.textContent = `Country : ${country.name}`;
+  pop.textContent = `Population : ${country.population}`;
+  capital.textContent = `Capital : ${country.capital}`;
+
+  container.appendChild(name);
+
+  details.appendChild(pop);
+  details.appendChild(capital);
+  container.appendChild(details);
 };
